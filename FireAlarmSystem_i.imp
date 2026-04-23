@@ -1,0 +1,71 @@
+/* FireAlarmSystem_i
+ * Author: aa
+ * Creation date: 12/13/2024
+ */
+
+IMPLEMENTATION FireAlarmSystem_i
+REFINES FireAlarmSystem_r
+CONCRETE_VARIABLES
+    alarm_state, sensor_status, test_mode_enabled
+
+
+
+INITIALISATION
+    alarm_state := OFF ; sensor_status := FALSE ; test_mode_enabled := FALSE
+
+
+
+OPERATIONS
+ActivateAlarm =
+    IF
+        alarm_state = OFF & sensor_status = TRUE & test_mode_enabled = FALSE
+    THEN
+        alarm_state := ON ; test_mode_enabled := FALSE
+    END;
+
+
+
+/* Deactivate the alarm manually */
+DeactivateAlarm =
+    IF
+        alarm_state = ON
+    THEN
+        alarm_state := OFF ; sensor_status := FALSE ; test_mode_enabled := FALSE
+    END;
+
+
+
+/* Update the sensor status (fire detected or resolved) */
+UpdateSensorStatus(new_status) =
+    IF
+        new_status = TRUE or new_status = FALSE
+    THEN
+        sensor_status := new_status ;
+        IF new_status = TRUE THEN 
+            alarm_state := ON ; test_mode_enabled := FALSE
+        ELSE
+            alarm_state := OFF ; test_mode_enabled := FALSE
+        END
+    END;
+
+
+
+/* Enter test mode for maintenance */
+EnterTestMode =
+    IF
+        alarm_state = OFF & test_mode_enabled = FALSE
+    THEN
+        alarm_state := TEST ; test_mode_enabled := TRUE
+    END;
+
+
+
+/* Exit test mode and return to normal state */
+ExitTestMode =
+    IF
+        alarm_state = TEST & test_mode_enabled = TRUE
+    THEN
+        alarm_state := OFF ; test_mode_enabled := FALSE
+    END
+
+END
